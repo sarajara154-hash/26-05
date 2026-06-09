@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+  {% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FunkoVerse - Tienda de Funkos Marvel y DC</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo">FunkoVerse</div>
+      <nav>
+        <a href="#marvel">Marvel</a>
+        <a href="#dc">DC Comics</a>
+        <a href="#exclusivos">Exclusivos</a>
+        <a href="#ofertas">Ofertas</a>
+      </nav>
+      <button class="cart-btn" onclick="toggleCart()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 8h14.6M9 21a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+        </svg>
+        Carrito
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>Colecciona tus heroes favoritos de <span class="marvel">Marvel</span> y <span class="dc">DC</span></h1>
+    <p>Descubre la coleccion mas grande de Funko Pop de superheroes. Ediciones exclusivas, figuras limitadas y todos tus personajes favoritos.</p>
+    <div class="hero-buttons">
+      <button class="btn btn-marvel" onclick="filterProducts('marvel')">Ver Marvel</button>
+      <button class="btn btn-dc" onclick="filterProducts('dc')">Ver DC Comics</button>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterProducts('all')">Todos</button>
+    <button class="filter-btn" onclick="filterProducts('marvel')">Marvel</button>
+    <button class="filter-btn" onclick="filterProducts('dc')">DC Comics</button>
+    <button class="filter-btn" onclick="filterProducts('exclusive')">Exclusivos</button>
+  </div>
+
+  <!-- Productos -->
+  <section class="products-section">
+    <h2 class="section-title">Nuestra Coleccion</h2>
+    <div class="products-grid" id="productsGrid"></div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>500+</h3>
+        <p>Funkos disponibles</p>
+      </div>
+      <div class="stat-item">
+        <h3>50+</h3>
+        <p>Ediciones exclusivas</p>
+      </div>
+      <div class="stat-item">
+        <h3>10K+</h3>
+        <p>Clientes satisfechos</p>
+      </div>
+      <div class="stat-item">
+        <h3>24h</h3>
+        <p>Envio express</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter">
+    <h2>Unete a nuestra comunidad</h2>
+    <p>Recibe ofertas exclusivas y novedades antes que nadie</p>
+    <form class="newsletter-form" onsubmit="return false;">
+      <input type="email" placeholder="Tu correo electronico" required>
+      <button type="submit">Suscribirse</button>
+    </form>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>FunkoVerse</h4>
+        <p style="color: var(--text-secondary); font-size: 0.9rem;">Tu tienda de confianza para coleccionables Funko Pop de Marvel y DC Comics.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Categorias</h4>
+        <ul>
+          <li><a href="#">Marvel</a></li>
+          <li><a href="#">DC Comics</a></li>
+          <li><a href="#">Exclusivos</a></li>
+          <li><a href="#">Novedades</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Ayuda</h4>
+        <ul>
+          <li><a href="#">Contacto</a></li>
+          <li><a href="#">Envios</a></li>
+          <li><a href="#">Devoluciones</a></li>
+          <li><a href="#">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Terminos</a></li>
+          <li><a href="#">Privacidad</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>2024 FunkoVerse. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- Cart Sidebar -->
+  <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()">
+    <div class="cart-sidebar" onclick="event.stopPropagation()">
+      <div class="cart-header">
+        <h3>Tu Carrito</h3>
+        <button class="close-cart" onclick="toggleCart()">&times;</button>
+      </div>
+      <div class="cart-items" id="cartItems">
+        <div class="cart-empty">Tu carrito esta vacio</div>
+      </div>
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Total:</span>
+          <span id="cartTotal">$0.00</span>
+        </div>
+        <button class="checkout-btn">Finalizar Compra</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Datos de productos
+    const products = [
+      { id: 1, name: "Spider-Man", series: "Marvel Avengers", price: 14.99, universe: "marvel", exclusive: false, image: "{% static 'src/SPIDER-MAN.png' %}"},
+      { id: 2, name: "Batman", series: "DC The Dark Knight", price: 14.99, universe: "dc", exclusive: false, image: "{% static 'src/batman.png' %}" },
+      { id: 3, name: "Iron Man", series: "Marvel Avengers", price: 16.99, universe: "marvel", exclusive: true, image: "{% static 'src/ironman.png' %}" },
+      { id: 4, name: "Wonder Woman", series: "DC Justice League", price: 15.99, universe: "dc", exclusive: false, image: "{% static 'src/mujermaravilla.png' %}" },
+      { id: 5, name: "Captain America", series: "Marvel Avengers", price: 14.99, universe: "marvel", exclusive: false, image: "{% static 'src/capitanamerica.png' %}" },
+      { id: 6, name: "The Joker", series: "DC Villains", price: 17.99, universe: "dc", exclusive: true, image: "{% static 'src/joker.png' %}" },
+      { id: 7, name: "Thor", series: "Marvel Avengers", price: 15.99, universe: "marvel", exclusive: false, image: "{% static 'src/thor.png' %}" },
+      { id: 8, name: "Superman", series: "DC Justice League", price: 14.99, universe: "dc", exclusive: false, image: "{% static 'src/superman.png' %}" },
+      { id: 9, name: "Hulk", series: "Marvel Avengers", price: 18.99, universe: "marvel", exclusive: true, image: "{% static 'src/hulk.png' %}" },
+      { id: 10, name: "The Flash", series: "DC Justice League", price: 15.99, universe: "dc", exclusive: false, image: "{% static 'src/flash.png' %}" },
+      { id: 11, name: "Black Widow", series: "Marvel Avengers", price: 14.99, universe: "marvel", exclusive: false, image: "{% static 'src/black.png' %}" },
+      { id: 12, name: "Aquaman", series: "DC Justice League", price: 16.99, universe: "dc", exclusive: true, image: "{% static 'src/aquaman.png' %}" }
+    ];
+
+    let cart = [];
+    let currentFilter = 'all';
+
+    // Renderizar productos
+    function renderProducts(filter = 'all') {
+      const grid = document.getElementById('productsGrid');
+      let filtered = products;
+
+      if (filter === 'marvel') {
+        filtered = products.filter(p => p.universe === 'marvel');
+      } else if (filter === 'dc') {
+        filtered = products.filter(p => p.universe === 'dc');
+      } else if (filter === 'exclusive') {
+        filtered = products.filter(p => p.exclusive);
+      }
+
+      grid.innerHTML = filtered.map(product => `
+        <div class="product-card ${product.universe}">
+          <div class="product-image">
+            <span class="badge badge-${product.universe}">${product.universe === 'marvel' ? 'Marvel' : 'DC'}</span>
+            ${product.exclusive ? '<span class="badge badge-exclusive">Exclusivo</span>' : ''}
+            <img src="${product.image}" alt="${product.name}">
+          </div>
+          <div class="product-info">
+            <h3 class="product-name">${product.name}</h3>
+            <p class="product-series">${product.series}</p>
+            <div class="product-footer">
+              <span class="product-price"><span class="currency">$</span>${product.price.toFixed(2)}</span>
+              <button class="add-to-cart" onclick="addToCart(${product.id})">Agregar</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Filtrar productos
+    function filterProducts(filter) {
+      currentFilter = filter;
+      renderProducts(filter);
+      
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active', 'marvel-active', 'dc-active');
+      });
+      
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => {
+        if (btn.textContent.toLowerCase().includes(filter) || 
+            (filter === 'all' && btn.textContent === 'Todos') ||
+            (filter === 'exclusive' && btn.textContent === 'Exclusivos')) {
+          if (filter === 'marvel') btn.classList.add('marvel-active');
+          else if (filter === 'dc') btn.classList.add('dc-active');
+          else btn.classList.add('active');
+        }
+      });
+    }
+
+    // Carrito
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      const existing = cart.find(item => item.id === productId);
+      
+      if (existing) {
+        existing.qty++;
+      } else {
+        cart.push({ ...product, qty: 1 });
+      }
+      
+      updateCart();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.id !== productId);
+      updateCart();
+    }
+
+    function updateQty(productId, delta) {
+      const item = cart.find(i => i.id === productId);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+          removeFromCart(productId);
+        } else {
+          updateCart();
+        }
+      }
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById('cartItems');
+      const cartCount = document.getElementById('cartCount');
+      const cartTotal = document.getElementById('cartTotal');
+      
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      
+      cartCount.textContent = totalItems;
+      cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+      
+      if (cart.length === 0) {
+        cartItems.innerHTML = '<div class="cart-empty">Tu carrito esta vacio</div>';
+      } else {
+        cartItems.innerHTML = cart.map(item => `
+          <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+              <div class="cart-item-controls">
+                <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                <span class="cart-item-qty">${item.qty}</span>
+                <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                <button class="remove-item" onclick="removeFromCart(${item.id})">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function toggleCart() {
+      document.getElementById('cartOverlay').classList.toggle('open');
+    }
+
+    // Inicializar
+    renderProducts();
+  </script>
+</body>
+</html>
+

@@ -16,7 +16,7 @@ Sistema de FUNKO, Marvel y DC.
 - Gisella Benitez: Encargado de Carpeta/Marketing 
 - Zaida Fernandez: Frontend
 - Espinoza Lautaro: Lider 
-v
+
 
 
 
